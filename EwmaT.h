@@ -32,15 +32,19 @@ public:
     */
     T filter(T input);
 
-    /*
-     * Smoothing factor, in range [0,alphaScale]. Higher the value - less smoothing (higher the latest reading impact).
-     */
-    unsigned int alphaScale;
-    T alpha;
+    T alpha() const;
+    unsigned int alphaScale() const;
+    void setAlpha(T alpha, unsigned int alphaScale);
+
 private:
     void init(T alpha, unsigned int alphaScale, T initialOutput);
 
+    /*
+     * Smoothing factor, in range [0,alphaScale]. Higher the value - less smoothing (higher the latest reading impact).
+     */
+    T _alpha;
     T outputScaled;
+    unsigned int _alphaScale;
     bool hasInitial;
 };
 
@@ -57,8 +61,8 @@ EwmaT<T>::EwmaT(T alpha, unsigned int alphaScale, T initialOutput) {
 
 template <typename T>
 void EwmaT<T>::init(T alpha, unsigned int alphaScale, T initialOutput) {
-    this->alpha = alpha;
-    this->alphaScale = alphaScale;
+    this->_alpha = alpha;
+    this->_alphaScale = alphaScale;
     this->outputScaled = initialOutput * alphaScale;
     this->hasInitial = true;
 }
@@ -71,9 +75,9 @@ void EwmaT<T>::reset() {
 template <typename T>
 T EwmaT<T>::filter(T input) {
     if (hasInitial) {
-        outputScaled = alpha * input + (alphaScale - alpha) * outputScaled / alphaScale;
+        outputScaled = _alpha * input + (_alphaScale - alpha) * outputScaled / _alphaScale;
     } else {
-        outputScaled = input * alphaScale;
+        outputScaled = input * _alphaScale;
         hasInitial = true;
     }
     return output();
@@ -81,7 +85,24 @@ T EwmaT<T>::filter(T input) {
 
 template <typename T>
 T EwmaT<T>::output() {
-    return (outputScaled + alphaScale / 2) / alphaScale;
+    return (outputScaled + _alphaScale / 2) / _alphaScale;
+}
+
+template <typename T>
+T EwmaT<T>::alpha() const {
+    return _alpha;
+}
+
+template <typename T>
+void EwmaT<T>::setAlpha(T alpha, unsigned int alphaScale) {
+    outputScaled = ((outputScaled + _alphaScale / 2) / _alphaScale) * alphaScale;
+    _alphaScale = alphaScale;
+    _alpha = alpha;
+}
+
+template <typename T>
+unsigned int EwmaT<T>::alphaScale() const {
+    return _alphaScale;
 }
 
 #endif /* EWMAT_H_ */
