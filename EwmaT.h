@@ -75,7 +75,7 @@ void EwmaT<T>::reset() {
 template <typename T>
 T EwmaT<T>::filter(T input) {
     if (hasInitial) {
-        outputScaled = _alpha * input + (_alphaScale - alpha) * outputScaled / _alphaScale;
+        outputScaled = _alpha * input + (_alphaScale - _alpha) * outputScaled / _alphaScale;
     } else {
         outputScaled = input * _alphaScale;
         hasInitial = true;
