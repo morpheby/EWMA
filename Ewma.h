@@ -60,7 +60,7 @@ public:
 	 */
 	Ewma(double tau, double initialOutput, uint64_t currentTimeUs);
 
-	void reset(uint64_t currentTimeUs);
+	void reset();
 
 	/*
 	 * Specifies a reading value.

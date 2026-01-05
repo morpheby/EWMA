@@ -11,9 +11,8 @@ Ewma::Ewma(double tau, double initialOutput, uint64_t currentTimeUs) {
 	this->lastTimeUs_ = currentTimeUs;
 }
 
-void Ewma::reset(uint64_t currentTimeUs) {
+void Ewma::reset() {
 	this->hasInitial_ = false;
-	this->lastTimeUs_ = currentTimeUs;
 }
 
 double Ewma::filter(double input, uint64_t currentTimeUs) {
@@ -23,6 +22,7 @@ double Ewma::filter(double input, uint64_t currentTimeUs) {
 	} else {
 		output_ = input;
 		hasInitial_ = true;
+		lastTimeUs_ = currentTimeUs;
 	}
 	return output_;
 }
