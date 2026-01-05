@@ -11,6 +11,9 @@
  *
  */
 
+ #include <stdint.h>
+ #include <math.h>
+
 #ifndef EWMA_H_
 #define EWMA_H_
 
@@ -19,32 +22,59 @@ public:
 	/*
 	 * Current data output
 	 */
-	double output = 0;
+	inline double output() const {
+		return output_;
+	}
+
 	/*
-	 * Smoothing factor, in range [0,1]. Higher the value - less smoothing (higher the latest reading impact).
+	 * Smoothing factor time value (loosely related to time constant)
 	 */
-	double alpha = 0;
+	inline double tauValue() const {
+		return tau_;
+	}
+
+	inline void setTauValue(double tau) {
+		tau_ = tau;
+	}
+
+	inline double alpha() const {
+		return 1.0 - exp(-1.0 / tau_);
+	}
+
+	inline double setAlpha(double alpha) {
+		tau_ = -1.0 / log(1.0 - alpha);
+		return tau_;
+	}
+
+	inline double alphaForPeriod(uint64_t periodUs) const {
+		return 1.0 - exp(-((double)periodUs) / tau_);
+	}
 
 	/*
 	 * Creates a filter without a defined initial output. The first output will be equal to the first input.
 	 */
-	Ewma(double alpha);
+	Ewma(double tau);
 
 	/*
 	 * Creates a filter with a defined initial output.
 	 */
-	Ewma(double alpha, double initialOutput);
+	Ewma(double tau, double initialOutput, uint64_t currentTimeUs);
 
-	void reset();
+	void reset(uint64_t currentTimeUs);
 
 	/*
 	 * Specifies a reading value.
 	 * @returns current output
 	 */
+	double filter(double input, uint64_t currentTimeUs);
+
 	double filter(double input);
 
 private:
-	bool hasInitial = false;
+	bool hasInitial_ = false;
+	uint64_t lastTimeUs_ = 0;
+	double output_ = 0;
+	double tau_ = 0;
 };
 
 #endif /* EWMA_H_ */
