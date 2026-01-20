@@ -47,7 +47,11 @@ public:
 	}
 
 	inline double alphaForPeriod(uint64_t periodUs) const {
-		return 1.0 - exp(-((double)periodUs) / tau_);
+		double value = exp(-((double)periodUs) / tau_);
+		if(isnan(value))
+			value = 0;
+			
+		return 1.0 - value;
 	}
 
 	/*

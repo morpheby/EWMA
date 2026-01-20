@@ -75,9 +75,9 @@ void EwmaT<T>::reset() {
 template <typename T>
 T EwmaT<T>::filter(T input) {
     if (hasInitial) {
-        outputScaled = _alpha * input + (_alphaScale - _alpha) * outputScaled / _alphaScale;
+        outputScaled = _alpha * input + static_cast<T>(_alphaScale - _alpha) * outputScaled / static_cast<T>(_alphaScale);
     } else {
-        outputScaled = input * _alphaScale;
+        outputScaled = input * static_cast<T>(_alphaScale);
         hasInitial = true;
     }
     return output();
@@ -85,7 +85,7 @@ T EwmaT<T>::filter(T input) {
 
 template <typename T>
 T EwmaT<T>::output() {
-    return (outputScaled + _alphaScale / 2) / _alphaScale;
+    return (outputScaled + (static_cast<T>(_alphaScale / 2))) / static_cast<T>(_alphaScale);
 }
 
 template <typename T>
@@ -95,7 +95,7 @@ T EwmaT<T>::alpha() const {
 
 template <typename T>
 void EwmaT<T>::setAlpha(T alpha, unsigned int alphaScale) {
-    outputScaled = ((outputScaled + _alphaScale / 2) / _alphaScale) * alphaScale;
+    outputScaled = output() * static_cast<T>(alphaScale);
     _alphaScale = alphaScale;
     _alpha = alpha;
 }
