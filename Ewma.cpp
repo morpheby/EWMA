@@ -30,6 +30,9 @@ double Ewma::filter(double input, uint64_t currentTimeUs) {
 double Ewma::filter(double input) {
 	if (hasInitial_) {
 		output_ = alpha() * (input - output_) + output_;
+		if (std::isnan(output_)) {
+			hasInitial_ = false;
+		}
 	} else {
 		output_ = input;
 		hasInitial_ = true;
