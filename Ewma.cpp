@@ -16,14 +16,13 @@ void Ewma::reset() {
 }
 
 double Ewma::filter(double input, uint64_t currentTimeUs) {
-	lastTimeUs_ = currentTimeUs;
 	if (hasInitial_) {
 		output_ = alphaForPeriod(currentTimeUs - lastTimeUs_) * (input - output_) + output_;
 	} else {
 		output_ = input;
 		hasInitial_ = true;
-		lastTimeUs_ = currentTimeUs;
 	}
+	lastTimeUs_ = currentTimeUs;
 	return output_;
 }
 
