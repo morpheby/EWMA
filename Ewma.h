@@ -12,7 +12,7 @@
  */
 
  #include <stdint.h>
- #include <math.h>
+ #include <cmath>
 
 #ifndef EWMA_H_
 #define EWMA_H_
@@ -38,17 +38,17 @@ public:
 	}
 
 	inline double alpha() const {
-		return 1.0 - exp(-1.0 / tau_);
+		return 1.0 - std::exp(-1.0 / tau_);
 	}
 
 	inline double setAlpha(double alpha) {
-		tau_ = -1.0 / log(1.0 - alpha);
+		tau_ = -1.0 / std::log(1.0 - alpha);
 		return tau_;
 	}
 
 	inline double alphaForPeriod(uint64_t periodUs) const {
-		double value = exp(-((double)periodUs) / tau_);
-		if(isnan(value))
+		double value = std::exp(-((double)periodUs) / tau_);
+		if(std::isnan(value))
 			value = 0;
 			
 		return 1.0 - value;
