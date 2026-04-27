@@ -17,52 +17,56 @@
 #ifndef EWMA_H_
 #define EWMA_H_
 
+#ifndef EWMA_FLOAT_TYPE
+#define EWMA_FLOAT_TYPE double 
+#endif
+
 class Ewma {
 public:
 	/*
 	 * Current data output
 	 */
-	inline double output() const {
+	inline EWMA_FLOAT_TYPE output() const {
 		return output_;
 	}
 
 	/*
 	 * Smoothing factor time value (loosely related to time constant)
 	 */
-	inline double tauValue() const {
+	inline EWMA_FLOAT_TYPE tauValue() const {
 		return tau_;
 	}
 
-	inline void setTauValue(double tau) {
+	inline void setTauValue(EWMA_FLOAT_TYPE tau) {
 		tau_ = tau;
 	}
 
-	inline double alpha() const {
-		return 1.0 - std::exp(-1.0 / tau_);
+	inline EWMA_FLOAT_TYPE alpha() const {
+		return EWMA_FLOAT_TYPE(1.0) - std::exp(EWMA_FLOAT_TYPE(-1.0) / tau_);
 	}
 
-	inline double setAlpha(double alpha) {
-		tau_ = -1.0 / std::log(1.0 - alpha);
+	inline EWMA_FLOAT_TYPE setAlpha(EWMA_FLOAT_TYPE alpha) {
+		tau_ = -EWMA_FLOAT_TYPE(1.0) / std::log(EWMA_FLOAT_TYPE(1.0) - alpha);
 		return tau_;
 	}
 
-	inline double alphaForPeriod(uint64_t periodUs) const {
-		double value = std::exp(-((double)periodUs) / tau_);
+	inline EWMA_FLOAT_TYPE alphaForPeriod(uint64_t periodUs) const {
+		EWMA_FLOAT_TYPE value = std::exp(-((EWMA_FLOAT_TYPE)periodUs) / tau_);
 		if(std::isnan(value))
 			value = 0;
 			
-		return 1.0 - value;
+		return EWMA_FLOAT_TYPE(1.0) - value;
 	}
 
 	/*
 	 * Creates a filter without a defined initial output. The first output will be equal to the first input.
 	 */
-	Ewma(double tau);
+	Ewma(EWMA_FLOAT_TYPE tau);
 
 	/*
 	 * Creates a filter with a defined initial output.
 	 */
-	Ewma(double tau, double initialOutput, uint64_t currentTimeUs);
+	Ewma(EWMA_FLOAT_TYPE tau, EWMA_FLOAT_TYPE initialOutput, uint64_t currentTimeUs);
 
 	void reset();
 
@@ -70,15 +74,15 @@ public:
 	 * Specifies a reading value.
 	 * @returns current output
 	 */
-	double filter(double input, uint64_t currentTimeUs);
+	EWMA_FLOAT_TYPE filter(EWMA_FLOAT_TYPE input, uint64_t currentTimeUs);
 
-	double filter(double input);
+	EWMA_FLOAT_TYPE filter(EWMA_FLOAT_TYPE input);
 
 private:
 	bool hasInitial_ = false;
 	uint64_t lastTimeUs_ = 0;
-	double output_ = 0;
-	double tau_ = 0;
+	EWMA_FLOAT_TYPE output_ = 0;
+	EWMA_FLOAT_TYPE tau_ = 0;
 };
 
 #endif /* EWMA_H_ */

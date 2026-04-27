@@ -1,10 +1,10 @@
 #include "Ewma.h"
 
-Ewma::Ewma(double tau) {
+Ewma::Ewma(EWMA_FLOAT_TYPE tau) {
 	this->tau_ = tau;
 }
 
-Ewma::Ewma(double tau, double initialOutput, uint64_t currentTimeUs) {
+Ewma::Ewma(EWMA_FLOAT_TYPE tau, EWMA_FLOAT_TYPE initialOutput, uint64_t currentTimeUs) {
 	this->tau_ = tau;
 	this->output_ = initialOutput;
 	this->hasInitial_ = true;
@@ -15,7 +15,7 @@ void Ewma::reset() {
 	this->hasInitial_ = false;
 }
 
-double Ewma::filter(double input, uint64_t currentTimeUs) {
+EWMA_FLOAT_TYPE Ewma::filter(EWMA_FLOAT_TYPE input, uint64_t currentTimeUs) {
 	if (hasInitial_) {
 		output_ = alphaForPeriod(currentTimeUs - lastTimeUs_) * (input - output_) + output_;
 	} else {
@@ -26,7 +26,7 @@ double Ewma::filter(double input, uint64_t currentTimeUs) {
 	return output_;
 }
 
-double Ewma::filter(double input) {
+EWMA_FLOAT_TYPE Ewma::filter(EWMA_FLOAT_TYPE input) {
 	if (hasInitial_) {
 		output_ = alpha() * (input - output_) + output_;
 		if (std::isnan(output_)) {
